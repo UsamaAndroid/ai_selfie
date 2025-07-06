@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = "/api/generate/webui/text2img";
     const fullUrl = getSignedUrl(baseUrl);
+console.log("🧪 Full LibLibAI URL:", fullUrl);
 
     const response = await fetch(`https://openapi.liblibai.cloud${fullUrl}`, {
       method: "POST",
@@ -15,8 +16,10 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify(body),
     });
+console.log("🔍 LibLibAI response status:", response.status);
 
     const result = await response.json();
+console.log("🔍 LibLibAI response status:", response.status);
 
     // 👇 Add this to see the actual response from LibLibAI
     console.log("📦 LibLibAI text2img result:", JSON.stringify(result, null, 2));
