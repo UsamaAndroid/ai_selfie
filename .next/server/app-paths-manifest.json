@@ -1,0 +1,6 @@
+{
+  "/api/generate-text2img/route": "app/api/generate-text2img/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/generate-img2img/route": "app/api/generate-img2img/route.js",
+  "/page": "app/page.js"
+}
