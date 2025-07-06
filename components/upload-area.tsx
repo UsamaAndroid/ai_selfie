@@ -430,7 +430,7 @@ const uploadImageAndGetUrl = async (file: File): Promise<string | null> => {
               style={{ background: "linear-gradient(to right, #F5A4CC, #DFF6B2)" }}
             >
               <Sparkles className="mr-3 h-5 w-5" />
-              Generate Image Now
+              Generate Text to Image
             </Button>
             <Button
               onClick={handleSubmit}
