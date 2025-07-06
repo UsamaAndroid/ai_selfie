@@ -92,8 +92,26 @@ const handleGenerate = async () => {
 };
 
 // Inside your component function:
+// const intervalRef = useRef<number | undefined>(undefined);
+const intervalRef = useRef<number | null>(null);
 
-const intervalRef = useRef<NodeJS.Timeout | null>(null);
+const startInterval = () => {
+  if (intervalRef.current !== null) {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  }
+
+  intervalRef.current = window.setInterval(() => {
+    console.log("Tick");
+  }, 1000);
+};
+
+const stopInterval = () => {
+  if (intervalRef.current !== null) {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  }
+};
 
 const generateImage = async () => {
   if (!selectedFile || !petName.trim()) return;
@@ -104,8 +122,7 @@ const generateImage = async () => {
   const formData = {
     templateUuid: "6f7c4652458d4802969f8d089cf5b91f",
     generateParams: {
-      // prompt: ` ${petName} with a toy. HIRO. A curly - furred Cornish Rex is leaping mid - air, taking a dynamic selfie with a reach towards the wide - angle lens in a spacious, high - ceilinged living area.`,
-      prompt: ` A curly - furred cat is leaping mid - air, taking a dynamic selfie with a reach towards the wide - angle lens in a spacious, high - ceilinged living area.`,
+      prompt: `A curly - furred cat is leaping mid - air, taking a dynamic selfie with a reach towards the wide - angle lens in a spacious, high - ceilinged living area.`,
       steps: 20,
       width: 768,
       height: 1024,
@@ -115,9 +132,9 @@ const generateImage = async () => {
       versionUuid: "0f51e0850fdb4d3da25f1e3667e1c071",
       additionalNetwork: [
         {
-          // modelId: "169505112cee468b95d5e4a5db0e5669",
           modelId: "0f51e0850fdb4d3da25f1e3667e1c071",
           weight: 1.0,
+          baseType: "flux",
         },
       ],
     },
@@ -135,11 +152,10 @@ const generateImage = async () => {
 
     if (!generateUuid) throw new Error("No generateUuid returned");
 
-    // Clear previous interval if any
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    // Clear any previous interval
+    stopInterval();
 
-    // Poll every 15 seconds
-    intervalRef.current = setInterval(async () => {
+    intervalRef.current = window.setInterval(async () => {
       try {
         const statusRes = await fetch("/api/generate-status", {
           method: "POST",
@@ -156,25 +172,16 @@ const generateImage = async () => {
         if (imageUrl && imageUrl.length > 0 && generateStatus === 5) {
           setGeneratedImageUrl(imageUrl);
           setIsGenerating(false);
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
+          stopInterval();
         } else if (generateStatus < 0) {
           console.error("Generation failed:", statusData.data.generateMsg);
           setIsGenerating(false);
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
+          stopInterval();
         }
       } catch (err) {
         console.error("Error polling generation status:", err);
         setIsGenerating(false);
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
+        stopInterval();
       }
     }, 15000);
   } catch (err) {
@@ -182,13 +189,13 @@ const generateImage = async () => {
     setIsGenerating(false);
   }
 };
-// Cleanup interval on unmount
+
+// Cleanup on unmount
 useEffect(() => {
   return () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    stopInterval();
   };
 }, []);
-
 
 const generateImageToImage = async () => {
   if (!selectedFile || !petName.trim()) return;
@@ -197,45 +204,37 @@ const generateImageToImage = async () => {
   setGeneratedImageUrl(null);
 
   try {
-    // STEP 1: Upload the file somewhere and get the URL
-    
-    // const uploadedImageUrl = await uploadImageAndGetUrl(selectedFile)
+    // ✅ If you plan to re-enable upload later
+    // const uploadedImageUrl = await uploadImageAndGetUrl(selectedFile);
     // if (!uploadedImageUrl) {
-    //   console.error("Image upload failed")
-    //   return
+    //   console.error("Image upload failed");
+    //   setIsGenerating(false);
+    //   return;
     // }
-    // const uploadedImageUrl = "https://liblibai-online.liblib.cloud/img/081e9f07d9bd4c2ba090efde163518f9/7c1cc38e-522c-43fe-aca9-07d5420d743e.png"; 
 
-    const uploadedImageUrl = "https://www.stockvault.net/data/2012/06/19/131807/thumb16.jpg"; 
-    // const uploadedImageUrl = ""; 
+    // 🔧 TEMP: Hardcoded image URL for now
+    const uploadedImageUrl = "https://www.stockvault.net/data/2012/06/19/131807/thumb16.jpg";
+
     console.log("Image URL sent to Img2Img API:", uploadedImageUrl);
+
     const formData = {
-  templateUuid: "9c7d531dc75f476aa833b3d452b8f7ad", // optional template UUID
-  generateParams: {
-    prompt: `The dog that is in the picture attached use it in your photo, with bright, intelligent eyes, is busy taking a selfie with the wide - angle camera. It jumps around energetically on a dog - friendly hiking trail, surrounded by lush greenery and the sounds of chirping birds. The sunlight filters through the leaves, creating a dappled pattern on the ground as the terrier strikes various playful poses.`,
-    steps: 40,
-    seed: -1,
-    imgCount: 1,
-    restoreFaces: 1,
-    sourceImage: uploadedImageUrl,
-    resizeMode: 0,
-    resizedWidth: 1024,
-    resizedHeight: 1536,
-    mode: 0, // img2img mode
-    denoisingStrength: 0.75,
-
-    // 🔥 Required for LoRA model
-    versionUuid: "82b68395b8c24b53a908aa87d52c0740", // HIRO dog selfie LoRA
-    baseType: "Anything-v6.8",                         // 🔥 Add this line!
-
-    // additionalNetwork: [
-    //   {
-    //     modelId: "82b68395b8c24b53a908aa87d52c0740",
-    //     weight: 1.0,
-    //   },
-    // ],
-  },
-}
+      templateUuid: "9c7d531dc75f476aa833b3d452b8f7ad",
+      generateParams: {
+        prompt: `The dog in the picture is taking a selfie with the wide-angle camera, jumping around on a hiking trail with greenery and filtered sunlight.`,
+        steps: 40,
+        seed: -1,
+        imgCount: 1,
+        restoreFaces: 1,
+        sourceImage: uploadedImageUrl,
+        resizeMode: 0,
+        resizedWidth: 1024,
+        resizedHeight: 1536,
+        mode: 0, // img2img mode
+        denoisingStrength: 0.75,
+        versionUuid: "82b68395b8c24b53a908aa87d52c0740",
+        baseType: "Anything-v6.8",
+      },
+    };
 
     const res = await fetch("/api/generate-img2img", {
       method: "POST",
@@ -248,9 +247,14 @@ const generateImageToImage = async () => {
 
     if (!generateUuid) throw new Error("No generateUuid returned");
 
+    // Clear any existing interval
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     // Start polling
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(async () => {
+    intervalRef.current = window.setInterval(async () => {
       try {
         const statusRes = await fetch("/api/generate-status", {
           method: "POST",
@@ -267,17 +271,19 @@ const generateImageToImage = async () => {
         if (imageUrl && generateStatus === 5) {
           setGeneratedImageUrl(imageUrl);
           setIsGenerating(false);
-          intervalRef.current && clearInterval(intervalRef.current);
+          clearInterval(intervalRef.current!);
+          intervalRef.current = null;
         } else if (generateStatus < 0) {
           console.error("Generation failed:", statusData.data.generateMsg);
           setIsGenerating(false);
-          intervalRef.current && clearInterval(intervalRef.current);
+          clearInterval(intervalRef.current!);
+          intervalRef.current = null;
         }
       } catch (pollError) {
         console.error("Polling error:", pollError);
         setIsGenerating(false);
-        intervalRef.current && clearInterval(intervalRef.current);
-
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
       }
     }, 15000);
   } catch (err) {
@@ -286,44 +292,7 @@ const generateImageToImage = async () => {
   }
 };
 
-const startPollingStatus = (generateUuid: string) => {
-  if (!generateUuid) return;
 
-  setIsGenerating(true);
-  setGeneratedImageUrl(null);
-
-  if (intervalRef.current) clearInterval(intervalRef.current);
-
-  intervalRef.current = setInterval(async () => {
-    try {
-      const statusRes = await fetch("/api/generate-status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ generateUuid }),
-      });
-
-      const statusData = await statusRes.json();
-      console.log("🔄 Poll result:", statusData);
-
-      const imageUrl = statusData?.data?.images?.[0]?.imageUrl;
-      const generateStatus = statusData?.data?.generateStatus;
-
-      if (imageUrl && generateStatus === 5) {
-        setGeneratedImageUrl(imageUrl);
-        setIsGenerating(false);
-        clearInterval(intervalRef.current!);
-      } else if (generateStatus < 0) {
-        console.error("Generation failed:", statusData.data.generateMsg);
-        setIsGenerating(false);
-        clearInterval(intervalRef.current!);
-      }
-    } catch (err) {
-      console.error("Polling error:", err);
-      setIsGenerating(false);
-      clearInterval(intervalRef.current!);
-    }
-  }, 15000);
-};
 const uploadImageAndGetUrl = async (file: File): Promise<string | null> => {
   const formData = new FormData()
   formData.append("file", file)
