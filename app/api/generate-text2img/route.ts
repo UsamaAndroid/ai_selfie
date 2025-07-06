@@ -1,19 +1,13 @@
-// app/api/generate-text2img/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
-import { getSignedUrl } from "@/lib/liblibai-util"; // Your util for signed URLs
+import { getSignedUrl } from "@/lib/liblibai-util";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // Base API endpoint for text2img generation as per liblibai doc
     const baseUrl = "/api/generate/webui/text2img";
-
-    // Get signed URL with all auth query params
     const fullUrl = getSignedUrl(baseUrl);
 
-    // Call LibLibAI official API
     const response = await fetch(`https://openapi.liblibai.cloud${fullUrl}`, {
       method: "POST",
       headers: {
@@ -22,11 +16,24 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    // Forward the response back to frontend
     const result = await response.json();
+
+    // 👇 Add this to see the actual response from LibLibAI
+    console.log("📦 LibLibAI text2img result:", JSON.stringify(result, null, 2));
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: "LibLibAI API error", details: result },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to generate image", details: error }, { status: 500 });
+    console.error("❌ API handler failed:", error);
+    return NextResponse.json(
+      { error: "Failed to generate image", details: (error as any)?.message || error },
+      { status: 500 }
+    );
   }
 }
