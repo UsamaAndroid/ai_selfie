@@ -226,7 +226,7 @@ const generateImageToImage = async () => {
   }
 
   console.log("✅ Image URL used for generation:", url);
-  const testSafeImageUrl = "https://liblibai-online.liblib.cloud/img/081e9f07d9bd4c2ba090efde163518f9/7c1cc38e-522c-43fe-aca9-07d5420d743e.png";
+  // const testSafeImageUrl = "https://liblibai-online.liblib.cloud/img/081e9f07d9bd4c2ba090efde163518f9/7c1cc38e-522c-43fe-aca9-07d5420d743e.png";
 
   const formData = {
     templateUuid: "9c7d531dc75f476aa833b3d452b8f7ad",
@@ -236,7 +236,7 @@ const generateImageToImage = async () => {
       seed: -1,
       imgCount: 1,
       restoreFaces: 1,
-      sourceImage: testSafeImageUrl,
+      sourceImage: url,
       resizeMode: 0,
       resizedWidth: 1024,
       resizedHeight: 1536,
