@@ -127,7 +127,7 @@ module.exports = require("next/dist/compiled/next-server/app-route.runtime.dev.j
 var __webpack_require__ = require("../../../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/next","vendor-chunks/string-random","vendor-chunks/hmacsha1"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fgenerate-text2img%2Froute&page=%2Fapi%2Fgenerate-text2img%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fgenerate-text2img%2Froute.ts&appDir=%2FUsers%2Fusama%2FDocuments%2FGitHub%2Fai_selfie%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2FUsers%2Fusama%2FDocuments%2FGitHub%2Fai_selfie&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
+var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/next","vendor-chunks/hmacsha1","vendor-chunks/string-random"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fgenerate-text2img%2Froute&page=%2Fapi%2Fgenerate-text2img%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fgenerate-text2img%2Froute.ts&appDir=%2FUsers%2Fusama%2FDocuments%2FGitHub%2Fai_selfie%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2FUsers%2Fusama%2FDocuments%2FGitHub%2Fai_selfie&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
 module.exports = __webpack_exports__;
 
 })();

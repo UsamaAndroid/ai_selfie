@@ -218,45 +218,35 @@ const generateImageToImage = async () => {
 
   setIsGenerating(true);
   setGeneratedImageUrl(null);
+
   const url = await uploadToUploadThing(selectedFile);
   if (!url) {
     setIsGenerating(false);
     return;
   }
 
-  setUploadedImageUrl(url); // optional, for UI
   console.log("✅ Image URL used for generation:", url);
 
-  setIsGenerating(true);
-  setGeneratedImageUrl(null);
+  const formData = {
+    templateUuid: "9c7d531dc75f476aa833b3d452b8f7ad",
+    generateParams: {
+      prompt: `The dog in the picture is taking a selfie with the wide-angle camera, jumping around on a hiking trail with greenery and filtered sunlight.`,
+      steps: 40,
+      seed: -1,
+      imgCount: 1,
+      restoreFaces: 1,
+      sourceImage: url, // ✅ use direct URL instead of uploadedImageUrl
+      resizeMode: 0,
+      resizedWidth: 1024,
+      resizedHeight: 1536,
+      mode: 0,
+      denoisingStrength: 0.75,
+      versionUuid: "82b68395b8c24b53a908aa87d52c0740",
+      baseType: "Anything-v6.8",
+    },
+  };
 
   try {
-    console.log("Image URL sent to Img2Img API:", uploadedImageUrl);
-
-    // 🔧 TEMP: Hardcoded image URL for now
-    // const uploadedImageUrl = "https://www.stockvault.net/data/2012/06/19/131807/thumb16.jpg";
-
-    console.log("Image URL sent to Img2Img API:", uploadedImageUrl);
-
-   const formData = {
-      templateUuid: "9c7d531dc75f476aa833b3d452b8f7ad",
-      generateParams: {
-        prompt: `The dog in the picture is taking a selfie with the wide-angle camera, jumping around on a hiking trail with greenery and filtered sunlight.`,
-        steps: 40,
-        seed: -1,
-        imgCount: 1,
-        restoreFaces: 1,
-        sourceImage: uploadedImageUrl, // ✅ <-- use uploaded image here
-        resizeMode: 0,
-        resizedWidth: 1024,
-        resizedHeight: 1536,
-        mode: 0,
-        denoisingStrength: 0.75,
-        versionUuid: "82b68395b8c24b53a908aa87d52c0740",
-        baseType: "Anything-v6.8",
-      },
-    };
-
     const res = await fetch("/api/generate-img2img", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -268,13 +258,6 @@ const generateImageToImage = async () => {
 
     if (!generateUuid) throw new Error("No generateUuid returned");
 
-    // Clear any existing interval
-    if (intervalRef.current !== null) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-
-    // Start polling
     intervalRef.current = window.setInterval(async () => {
       try {
         const statusRes = await fetch("/api/generate-status", {
@@ -312,6 +295,7 @@ const generateImageToImage = async () => {
     setIsGenerating(false);
   }
 };
+
 
   return (
     <div className="max-w-2xl mx-auto">
