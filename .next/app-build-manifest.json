@@ -26,6 +26,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/generate-img2img/route.js"
     ],
+    "/api/generate-status/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/generate-status/route.js"
+    ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

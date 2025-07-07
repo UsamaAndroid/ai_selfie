@@ -138,7 +138,7 @@ const generateImage = async () => {
   const formData = {
     templateUuid: "6f7c4652458d4802969f8d089cf5b91f",
     generateParams: {
-      prompt: `A curly - furred cat is leaping mid - air, taking a dynamic selfie with a reach towards the wide - angle lens in a spacious, high - ceilinged living area.`,
+      prompt: `A cat wearing sunglasses, cartoon style, sunny day.`,
       steps: 20,
       width: 768,
       height: 1024,
@@ -226,6 +226,7 @@ const generateImageToImage = async () => {
   }
 
   console.log("✅ Image URL used for generation:", url);
+  const testSafeImageUrl = "https://liblibai-online.liblib.cloud/img/081e9f07d9bd4c2ba090efde163518f9/7c1cc38e-522c-43fe-aca9-07d5420d743e.png";
 
   const formData = {
     templateUuid: "9c7d531dc75f476aa833b3d452b8f7ad",
@@ -235,7 +236,7 @@ const generateImageToImage = async () => {
       seed: -1,
       imgCount: 1,
       restoreFaces: 1,
-      sourceImage: url, // ✅ use direct URL instead of uploadedImageUrl
+      sourceImage: testSafeImageUrl,
       resizeMode: 0,
       resizedWidth: 1024,
       resizedHeight: 1536,
