@@ -11,6 +11,10 @@ import { Label } from "@/components/ui/label"
 import { Upload, DollarSign, Sparkles } from "lucide-react"
 import Image from "next/image"
 import { fileToBase64 } from "@/lib/fileToBase64";
+import { UploadButton } from "@uploadthing/react";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
+const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+
 
 interface UploadAreaProps {
   onUpload: (file: File, petName: string) => void
@@ -198,26 +202,20 @@ useEffect(() => {
 }, []);
 
 const generateImageToImage = async () => {
-  if (!selectedFile || !petName.trim()) return;
+  if (!uploadedImageUrl || !petName.trim()) return;
 
   setIsGenerating(true);
   setGeneratedImageUrl(null);
 
   try {
-    // ✅ If you plan to re-enable upload later
-    // const uploadedImageUrl = await uploadImageAndGetUrl(selectedFile);
-    // if (!uploadedImageUrl) {
-    //   console.error("Image upload failed");
-    //   setIsGenerating(false);
-    //   return;
-    // }
+    console.log("Image URL sent to Img2Img API:", uploadedImageUrl);
 
     // 🔧 TEMP: Hardcoded image URL for now
-    const uploadedImageUrl = "https://www.stockvault.net/data/2012/06/19/131807/thumb16.jpg";
+    // const uploadedImageUrl = "https://www.stockvault.net/data/2012/06/19/131807/thumb16.jpg";
 
     console.log("Image URL sent to Img2Img API:", uploadedImageUrl);
 
-    const formData = {
+   const formData = {
       templateUuid: "9c7d531dc75f476aa833b3d452b8f7ad",
       generateParams: {
         prompt: `The dog in the picture is taking a selfie with the wide-angle camera, jumping around on a hiking trail with greenery and filtered sunlight.`,
@@ -225,11 +223,11 @@ const generateImageToImage = async () => {
         seed: -1,
         imgCount: 1,
         restoreFaces: 1,
-        sourceImage: uploadedImageUrl,
+        sourceImage: uploadedImageUrl, // ✅ <-- use uploaded image here
         resizeMode: 0,
         resizedWidth: 1024,
         resizedHeight: 1536,
-        mode: 0, // img2img mode
+        mode: 0,
         denoisingStrength: 0.75,
         versionUuid: "82b68395b8c24b53a908aa87d52c0740",
         baseType: "Anything-v6.8",
@@ -378,6 +376,17 @@ const uploadImageAndGetUrl = async (file: File): Promise<string | null> => {
               <span className="font-bold text-green-600">$6.99</span>
               <span className="text-gray-600">per generation</span>
             </div>
+           <UploadButton<OurFileRouter>
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                const url = res?.[0]?.url;
+                console.log("✅ Uploaded image URL:", url);
+                setUploadedImageUrl(url || null);
+              }}
+              onUploadError={(error: Error) => {
+                alert(`Upload failed: ${error.message}`);
+              }}
+            />
             <Button
               onClick={handleGenerate}
               disabled={!selectedFile || !petName.trim()}
@@ -414,6 +423,15 @@ const uploadImageAndGetUrl = async (file: File): Promise<string | null> => {
               />
             </div>
           )}
+          <Button
+              onClick={generateImageToImage}
+              disabled={!uploadedImageUrl || !petName.trim()}
+              className="w-full h-14 text-lg text-white font-semibold border-0"
+              style={{ background: "linear-gradient(to right, #FFB7B2, #FCE38A)" }}
+            >
+              <Sparkles className="mr-3 h-5 w-5" />
+              New Button (Img2Img)
+            </Button>
             <Button
               onClick={generateImageToImage}
               disabled={!selectedFile || !petName.trim()}
