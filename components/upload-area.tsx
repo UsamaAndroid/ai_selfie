@@ -11,8 +11,20 @@ import { Label } from "@/components/ui/label"
 import { Upload, DollarSign, Sparkles } from "lucide-react"
 import Image from "next/image"
 import { fileToBase64 } from "@/lib/fileToBase64";
-import { UploadButton } from "@uploadthing/react";
+// import { UploadButton } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
+import { genUploader } from "uploadthing/client";
+
+const { uploadFiles } = genUploader<OurFileRouter>();
+const uploadToUploadThing = async (file: File): Promise<string | null> => {
+  try {
+    const res = await uploadFiles("imageUploader", { files: [file] });
+    return res?.[0]?.url || null;
+  } catch (err) {
+    console.error("❌ UploadThing upload failed:", err);
+    return null;
+  }
+};
 
 
 interface UploadAreaProps {
@@ -202,7 +214,18 @@ useEffect(() => {
 }, []);
 
 const generateImageToImage = async () => {
-  if (!uploadedImageUrl || !petName.trim()) return;
+  if (!selectedFile || !petName.trim()) return;
+
+  setIsGenerating(true);
+  setGeneratedImageUrl(null);
+  const url = await uploadToUploadThing(selectedFile);
+  if (!url) {
+    setIsGenerating(false);
+    return;
+  }
+
+  setUploadedImageUrl(url); // optional, for UI
+  console.log("✅ Image URL used for generation:", url);
 
   setIsGenerating(true);
   setGeneratedImageUrl(null);
@@ -290,25 +313,6 @@ const generateImageToImage = async () => {
   }
 };
 
-
-const uploadImageAndGetUrl = async (file: File): Promise<string | null> => {
-  const formData = new FormData()
-  formData.append("file", file)
-
-  try {
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    })
-
-    const data = await res.json()
-    return data.url || null
-  } catch (error) {
-    console.error("❌ Upload failed", error)
-    return null
-  }
-}
-
   return (
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-8">
@@ -376,7 +380,7 @@ const uploadImageAndGetUrl = async (file: File): Promise<string | null> => {
               <span className="font-bold text-green-600">$6.99</span>
               <span className="text-gray-600">per generation</span>
             </div>
-           <UploadButton<OurFileRouter, "imageUploader">
+           {/* <UploadButton<OurFileRouter, "imageUploader">
             endpoint="imageUploader"
             onClientUploadComplete={(res) => {
               const url = res?.[0]?.url;
@@ -386,7 +390,7 @@ const uploadImageAndGetUrl = async (file: File): Promise<string | null> => {
             onUploadError={(error: Error) => {
               alert(`Upload failed: ${error.message}`);
             }}
-          />
+          /> */}
             <Button
               onClick={handleGenerate}
               disabled={!selectedFile || !petName.trim()}
