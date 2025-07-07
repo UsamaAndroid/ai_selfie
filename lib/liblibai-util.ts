@@ -1,10 +1,15 @@
 // lib/liblibai-util.ts
-
 const hmacsha1 = require('hmacsha1');
 import stringRandom from 'string-random';
 
-const SECRET_KEY = process.env.LIBLIB_SECRET_KEY as string; // Set this in .env.local
-const ACCESS_KEY = process.env.LIBLIB_ACCESS_KEY as string; // Set this in .env.local
+const SECRET_KEY = process.env.LIBLIB_SECRET_KEY as string;
+const ACCESS_KEY = process.env.LIBLIB_ACCESS_KEY as string;
+
+// ✅ Add the check right here:
+if (!SECRET_KEY || !ACCESS_KEY) {
+  throw new Error("❌ Missing LiblibAI SECRET_KEY or ACCESS_KEY in environment");
+}
+
 
 interface SignatureResult {
   signature: string;
