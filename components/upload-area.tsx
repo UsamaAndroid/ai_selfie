@@ -13,7 +13,6 @@ import Image from "next/image"
 import { fileToBase64 } from "@/lib/fileToBase64";
 import { UploadButton } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
-const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
 
 interface UploadAreaProps {
@@ -30,6 +29,7 @@ const [isGenerating, setIsGenerating] = useState(false);
 const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
 const [statusText, setStatusText] = useState<string>("");
 const [pollFailures, setPollFailures] = useState<number>(0);
+const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -376,17 +376,17 @@ const uploadImageAndGetUrl = async (file: File): Promise<string | null> => {
               <span className="font-bold text-green-600">$6.99</span>
               <span className="text-gray-600">per generation</span>
             </div>
-           <UploadButton<OurFileRouter>
-              endpoint="imageUploader"
-              onClientUploadComplete={(res) => {
-                const url = res?.[0]?.url;
-                console.log("✅ Uploaded image URL:", url);
-                setUploadedImageUrl(url || null);
-              }}
-              onUploadError={(error: Error) => {
-                alert(`Upload failed: ${error.message}`);
-              }}
-            />
+           <UploadButton<OurFileRouter, "imageUploader">
+            endpoint="imageUploader"
+            onClientUploadComplete={(res) => {
+              const url = res?.[0]?.url;
+              console.log("✅ Uploaded image URL:", url);
+              setUploadedImageUrl(url || null);
+            }}
+            onUploadError={(error: Error) => {
+              alert(`Upload failed: ${error.message}`);
+            }}
+          />
             <Button
               onClick={handleGenerate}
               disabled={!selectedFile || !petName.trim()}
