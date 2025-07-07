@@ -236,7 +236,7 @@ const generateImageToImage = async () => {
       seed: -1,
       imgCount: 1,
       restoreFaces: 1,
-      sourceImage: testSafeImageUrl,
+      sourceImage: url,
       resizeMode: 0,
       resizedWidth: 1024,
       resizedHeight: 1536,
