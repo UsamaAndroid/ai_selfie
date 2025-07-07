@@ -1,41 +1,34 @@
+// app/api/generate-text2img/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getSignedUrl } from "@/lib/liblibai-util";
+import { getApiUrl } from "@/lib/liblibai-util";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     const baseUrl = "/api/generate/webui/text2img";
-    const fullUrl = getSignedUrl(baseUrl);
-console.log("🧪 Full LibLibAI URL:", fullUrl);
+    const fullUrl = getApiUrl(baseUrl);
 
-    const response = await fetch(`https://openapi.liblibai.cloud${fullUrl}`, {
+    const response = await fetch(fullUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-console.log("🔍 LibLibAI response status:", response.status);
 
     const result = await response.json();
-console.log("🔍 LibLibAI response status:", response.status);
-
-    // 👇 Add this to see the actual response from LibLibAI
-    console.log("📦 LibLibAI text2img result:", JSON.stringify(result, null, 2));
 
     if (!response.ok) {
+      console.error("❌ LiblibAI API returned error:", result);
       return NextResponse.json(
-        { error: "LibLibAI API error", details: result },
-        { status: 500 }
+        { error: "LiblibAI error", details: result },
+        { status: response.status }
       );
     }
 
     return NextResponse.json(result);
-  } catch (error) {
-    console.error("❌ API handler failed:", error);
+  } catch (error: any) {
+    console.error("❌ Server error:", error);
     return NextResponse.json(
-      { error: "Failed to generate image", details: (error as any)?.message || error },
+      { error: "Internal server error", details: error?.message || error },
       { status: 500 }
     );
   }
