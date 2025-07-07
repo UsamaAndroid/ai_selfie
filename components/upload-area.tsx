@@ -138,7 +138,7 @@ const generateImage = async () => {
   const formData = {
     templateUuid: "6f7c4652458d4802969f8d089cf5b91f",
     generateParams: {
-      prompt: `A cat wearing sunglasses, cartoon style, sunny day.`,
+      prompt: `A sleek Siamese with striking blue eyes is busy taking a selfie with the wide - angle camera, reaching out a paw from a cozy living - room corner under warm lighting.`,
       steps: 20,
       width: 768,
       height: 1024,
@@ -219,24 +219,24 @@ const generateImageToImage = async () => {
   setIsGenerating(true);
   setGeneratedImageUrl(null);
 
-  const url = await uploadToUploadThing(selectedFile);
+  var url = await uploadToUploadThing(selectedFile);
   if (!url) {
     setIsGenerating(false);
     return;
   }
-
-  console.log("✅ Image URL used for generation:", url);
   // const testSafeImageUrl = "https://liblibai-online.liblib.cloud/img/081e9f07d9bd4c2ba090efde163518f9/7c1cc38e-522c-43fe-aca9-07d5420d743e.png";
+  // url = testSafeImageUrl;
+  console.log("✅ Image URL used for generation:", url);
 
   const formData = {
     templateUuid: "9c7d531dc75f476aa833b3d452b8f7ad",
     generateParams: {
-      prompt: `The dog in the picture is taking a selfie with the wide-angle camera, jumping around on a hiking trail with greenery and filtered sunlight.`,
+      prompt: `The cat in the picture is taking a selfie with the wide-angle camera, jumping around on a hiking trail with greenery and filtered sunlight.`,
       steps: 40,
       seed: -1,
       imgCount: 1,
       restoreFaces: 1,
-      sourceImage: url,
+      sourceImage: testSafeImageUrl,
       resizeMode: 0,
       resizedWidth: 1024,
       resizedHeight: 1536,
